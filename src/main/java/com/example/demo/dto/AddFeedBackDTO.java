@@ -4,18 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: AddFeedBackDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/2/21 11:55
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/2/21 11:55
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
 public class AddFeedBackDTO {
     private int feedbackId;
     private int projectId;

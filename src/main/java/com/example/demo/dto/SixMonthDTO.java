@@ -2,18 +2,6 @@ package com.example.demo.dto;
 
 import java.util.List;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: SixMonthDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/12 18:04
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/12 18:04
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
 public class SixMonthDTO {
     private List<Integer> nums;
     private List<Double> raised;

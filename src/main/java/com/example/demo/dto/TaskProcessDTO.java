@@ -4,18 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: TaskProcessDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/14 9:06
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/14 9:06
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
 public class TaskProcessDTO {
     private int userId;
     private String nickName;

@@ -1,17 +1,6 @@
 package com.example.demo.dto;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: UserDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/10 18:19
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/10 18:19
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
+
 public class UserDTO {
     private int userId;
     private int roleId;

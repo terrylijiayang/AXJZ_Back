@@ -4,18 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.entity
- * @ClassName: FundRecord
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/11 21:34
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/11 21:34
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
+
 public class FundRecord {
     private int fundId;
     private int userId;

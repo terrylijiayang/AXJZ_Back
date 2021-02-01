@@ -4,18 +4,6 @@ import com.example.demo.entity.CharityProject;
 
 import java.util.List;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: TaskByUserIdDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/14 12:11
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/14 12:11
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
 public class TaskByUserIdDTO {
     private  int total;
     private List<CharityProject> charityProjects;

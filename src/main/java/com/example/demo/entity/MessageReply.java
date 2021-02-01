@@ -5,18 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.entity
- * @ClassName: MessageReply
- * @Description: 一个项目留言的回复信息
- * @Author: 李佳阳
- * @CreateDate: 2020/2/17 12:01
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/2/17 12:01
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
+
 public class MessageReply {
     private int id;
 

@@ -2,18 +2,7 @@ package com.example.demo.entity;
 
 import java.util.List;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.entity
- * @ClassName: MenuList
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/3/9 14:33
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/3/9 14:33
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
+
 public class MenuList {
     private int menuId;
     private String menuName;

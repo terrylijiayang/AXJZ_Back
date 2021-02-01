@@ -5,18 +5,6 @@ import com.example.demo.entity.DonationRecord;
 
 import java.util.List;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: MyDonationDTO
- * @Description: 用户捐赠的信息
- * @Author: 李佳阳
- * @CreateDate: 2020/2/21 16:49
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/2/21 16:49
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
 public class MyDonationAllDTO {
     private  List<MyDonationDTO> myDonationDTOList;
     private int total;

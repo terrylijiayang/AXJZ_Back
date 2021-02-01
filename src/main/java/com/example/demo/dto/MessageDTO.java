@@ -4,18 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-/**
- * @ProjectName: demo
- * @Package: com.example.demo.dto
- * @ClassName: MessageDTO
- * @Description: java类作用描述
- * @Author: 李佳阳
- * @CreateDate: 2020/2/17 12:53
- * @UpdateUser: 更新者
- * @UpdateDate: 2020/2/17 12:53
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
+
 public class MessageDTO {
 
     private int id;
