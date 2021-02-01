@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.mapper.CharityProjectMapper">
+
+    <select id="getAllProjects" parameterType="com.example.demo.dto.PageDTO" resultType="com.example.demo.dto.UserProjectsDTO">
+        select projectId,charity_category.categoryId,u.userId,projectName,projectImagePath,raisedFunds,participantNumber,introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime,
+				categoryName,u.nickName,u.realName
+   from charity_project,charity_category,user u
+   WHERE charity_category.categoryId = charity_project.categoryId
+				and charity_project.userId=u.userId
+				limit #{page},#{pageSize}
+    </select>
+    <select id="userHelpProjects" parameterType="com.example.demo.dto.UserHelpProjectsDTO" resultType="com.example.demo.dto.UserProjectsDTO">
+        select projectId,charity_category.categoryId,u.userId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime,
+        categoryName,u.nickName,u.realName
+        from charity_project,charity_category,user u
+        WHERE charity_category.categoryId = charity_project.categoryId and u.userId=#{userId}
+        and charity_project.userId=u.userId
+        limit #{page},#{pageSize}
+    </select>
+    <select id="userHelpProjectsNum" resultType="java.lang.Integer">
+        select count(*)
+        from charity_project,charity_category,user u
+        WHERE charity_category.categoryId = charity_project.categoryId and u.userId=#{userId}
+        and charity_project.userId=u.userId
+    </select>
+    <select id="AllProjectsNum" resultType="java.lang.Integer">
+        select count(*)
+        from charity_project,charity_category,user u
+        WHERE charity_category.categoryId = charity_project.categoryId
+        and charity_project.userId=u.userId
+    </select>
+    <select id="getCharityProjectByCategoryId" resultType="com.example.demo.entity.CharityProject">
+        select projectId, categoryId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,
+        introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime
+        from charity_project
+        where categoryId = #{arg0}
+    </select>
+    <select id="getCharityProjectById" resultType="com.example.demo.dto.ProjectsDTO">
+ select projectId,charity_category.categoryId,u.userId,projectName,projectImagePath,raisedFunds,participantNumber,introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime,
+				categoryName,u.nickName,u.realName
+   from charity_project,charity_category,user u
+   WHERE charity_category.categoryId = charity_project.categoryId
+				and charity_project.userId=u.userId and projectId= #{arg0}
+    </select>
+    <select id="getCharityProjectByUserId" resultType="com.example.demo.entity.CharityProject">
+        select projectId, categoryId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,
+        introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime
+        from charity_project
+        where userId = #{arg0}
+    </select>
+    <select id="getFeedbackByProjectId" resultType="com.example.demo.entity.Feedback">
+        select feedbackId,projectId,createdAt,user.realName as feedbackName,content
+        from feedback,`user`
+        where user.userId=feedback.userId and projectId = #{arg0}
+         ORDER BY feedback.createdAt DESC
+    </select>
+    <select id="getFundRecordByProjectId" resultType="com.example.demo.dto.FundRecordDTO">
+        select fundId,createdAt,user.realName as fundRecordName,content,fund
+        from fund_record,`user`
+        where user.userId=fund_record.userId and projectId = #{arg0}
+        ORDER BY fund_record.createdAt DESC
+    </select>
+    <insert id="addFeedback" parameterType="com.example.demo.dto.AddFeedBackDTO" >
+     INSERT INTO feedback (
+     projectId,userId,createdAt,content
+     )VALUES(
+      #{projectId},#{userId},#{createdAt},#{content}
+     )
+    </insert>
+    <insert id="useFund" parameterType="com.example.demo.entity.FundRecord" >
+        INSERT INTO fund_record (
+        userId,projectId,fund,content,createdAt
+        )VALUES(
+        #{userId},#{projectId},#{fund},#{content},#{createdAt}
+        )
+    </insert>
+    <update id="updateProjectFund" parameterType="com.example.demo.entity.FundRecord">
+        update charity_project
+        set usedFunds = usedFunds-#{fund}
+        where  projectId = #{projectId}
+    </update>
+    <insert id="addCharityProject" parameterType="com.example.demo.entity.CharityProject" >
+        INSERT INTO charity_project (
+        categoryId,userId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,
+        introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime
+        )
+        VALUES (
+         #{categoryId},#{userId},#{projectName},#{projectImagePath},#{raisedFunds},#{usedFunds},#{participantNumber},
+        #{introduce},#{projectPlan},#{budget},#{budgetBreakdown},#{state},#{addTime},#{startingTime},#{endingTime}
+        )
+    </insert>
+    <update id="updateCharityProject" parameterType="com.example.demo.entity.CharityProject">
+        update charity_project
+        set raisedFunds = raisedFunds+#{raisedFunds},
+        usedFunds = usedFunds+#{raisedFunds},
+        participantNumber = participantNumber+#{participantNumber}
+        where  projectId = #{projectId}
+    </update>
+    <update id="updateProjectState" parameterType="java.util.List">
+        update charity_project
+        set state = 1
+        where  projectId = #{arg0}
+    </update>
+    <update id="PrStateWait" parameterType="java.util.List">
+        update charity_project
+        set state = 2
+        where  projectId = #{arg0}
+    </update>
+    <delete id="delProjectById" parameterType="java.util.List">
+        DELETE FROM charity_project WHERE projectId = #{arg0}
+    </delete>
+    <insert id="addProMessage" parameterType="com.example.demo.entity.Message" >
+        INSERT INTO project_message (
+        content,userId,projectId,createdAt
+        )
+        VALUES (
+        #{content},#{userId},#{projectId},#{createdAt}
+        )
+    </insert>
+    <select id="getMessagesByProjectId" resultType="com.example.demo.dto.MessageDTO">
+    select m.id,m.content,m.userId,m.projectId,m.createdAt,u.realName,u.nickName,
+        (select count(*) from project_message_reply r where r.messageId = m.id) AS num
+        from project_message m,`user` u
+        WHERE m.userId=u.userId AND m.projectId=#{arg0}
+        ORDER BY m.createdAt DESC
+    </select>
+    <delete id="delProMessageById" parameterType="java.util.List">
+        DELETE FROM project_message WHERE id = #{arg0}
+    </delete>
+    <insert id="addProMessageReply" parameterType="com.example.demo.entity.MessageReply" >
+        INSERT INTO project_message_reply (
+        content,replymanId,projectId,messageId,createdAt
+        )
+        VALUES (
+        #{content},#{replymanId},#{projectId},#{messageId},#{createdAt}
+        )
+    </insert>
+    <select id="getReplyByMessageId" resultType="com.example.demo.dto.MessageReplyDTO">
+      select project_message_reply.id,content,realName,nickName,createdAt
+        FROM  project_message_reply,`user`
+        WHERE 	`user`.userId=project_message_reply.replymanId and project_message_reply.messageId= #{arg0}
+        ORDER BY createdAt DESC
+    </select>
+    <delete id="delReplyByMessageId" parameterType="java.util.List">
+        DELETE FROM project_meessge_reply WHERE id = #{arg0}
+    </delete>
+    <select id="getAllRaisedFunds" resultType="java.lang.Double">
+        SELECT SUM(raisedFunds) from charity_project
+    </select>
+    <select id="getSurplusFunds" resultType="java.lang.Double">
+        SELECT SUM(usedFunds) from charity_project
+    </select>
+    <select id="getUsedFunds" resultType="java.lang.Double">
+            SELECT SUM(raisedFunds)-SUM(usedFunds) from charity_project
+    </select>
+    <select id="getBudgetFunds" resultType="java.lang.Double">
+       SELECT SUM(budget) from charity_project
+    </select>
+    <select id="getHelpUsers" resultType="java.lang.Integer">
+       SELECT  COUNT(DISTINCT(userId)) as num FROM charity_project
+    </select>
+    <select id="getSixMonthNums" resultType="java.lang.Integer">
+        SELECT IFNULL(b.num,0) AS nums
+        FROM(
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 5 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 4 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 3 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 2 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(CURDATE(),'%m') as click_month
+        ) a LEFT JOIN (
+        SELECT DATE_FORMAT(startingTime,'%m') AS time,COUNT(*) AS num,SUM(raisedFunds) AS raised,SUM(usedFunds) AS used
+        FROM charity_project GROUP BY DATE_FORMAT(startingTime,'%Y-%m')
+        )b ON a.click_month=b.time
+    </select>
+    <select id="getSixMonthRaised" resultType="java.lang.Double">
+        SELECT IFNULL(b.raised,0) AS raised
+        FROM(
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 5 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 4 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 3 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 2 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(CURDATE(),'%m') as click_month
+        ) a LEFT JOIN (
+        SELECT DATE_FORMAT(startingTime,'%m') AS time,COUNT(*) AS num,SUM(raisedFunds) AS raised,SUM(usedFunds) AS used
+        FROM charity_project GROUP BY DATE_FORMAT(startingTime,'%Y-%m')
+        )b ON a.click_month=b.time
+    </select>
+    <select id="getSixMonthUsed" resultType="java.lang.Double">
+        SELECT IFNULL(b.used,0) AS used
+        FROM(
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 5 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 4 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 3 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 2 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%m') as click_month
+        UNION ALL
+        SELECT DATE_FORMAT(CURDATE(),'%m') as click_month
+        ) a LEFT JOIN (
+        SELECT DATE_FORMAT(startingTime,'%m') AS time,COUNT(*) AS num,SUM(raisedFunds) AS raised,SUM(usedFunds) AS used
+        FROM charity_project GROUP BY DATE_FORMAT(startingTime,'%Y-%m')
+        )b ON a.click_month=b.time
+    </select>
+    <insert id="addProTask" parameterType="com.example.demo.dto.TaskDTO" >
+        INSERT INTO project_task (
+        projectId,userId,state,createdAt
+        )
+        VALUES
+        <foreach collection="userValue" item="userId" index= "index" separator =",">
+            (
+            #{projectId},
+            #{userId},
+            0,
+            #{createdAt}
+            )
+        </foreach>
+    </insert>
+    <update id="updateProTask" parameterType="com.example.demo.dto.UpdateTaskDTO">
+        update project_task
+        set state = #{state},createdAt=#{createdAt}
+        where  projectId = #{projectId} AND  userId=#{userId}
+    </update>
+    <select id="getTaskByUserId" parameterType="com.example.demo.dto.TaskPageDTO" resultType="com.example.demo.entity.CharityProject">
+        SELECT p.projectId, categoryId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,
+    introduce,projectPlan,budget,budgetBreakdown,p.state,addTime,startingTime,endingTime
+    FROM charity_project p ,project_task t WHERE t.userId= #{userId} AND t.projectId=p.projectId
+    limit #{page},#{pageSize}
+    </select>
+    <select id="getTaskNumByUserId" parameterType="java.util.List" resultType="java.lang.Integer">
+        SELECT COUNT(*) num
+        FROM charity_project p ,project_task t WHERE t.userId= #{arg0} AND t.projectId=p.projectId
+    </select>
+    <update id="updateProState" parameterType="java.util.List">
+         update charity_project
+        set state = 1
+        where projectId=#{arg0} AND
+        NOT EXISTS(
+        SELECT * from project_task WHERE projectId=#{arg0} AND state in (-1,0)
+        )
+    </update>
+    <update id="waitProState" parameterType="java.util.List">
+        update charity_project
+        set state = 2
+        where projectId=#{arg0} AND
+        NOT EXISTS(
+        SELECT * from project_task WHERE projectId=#{arg0} AND state in (-1)
+        )
+    </update>
+    <update id="stopProState" parameterType="java.util.List">
+        update charity_project
+        set state = -1
+        where projectId=#{arg0}
+    </update>
+    <select id="getTaskProcess" parameterType="java.util.List"  resultType="com.example.demo.dto.TaskProcessDTO">
+        SELECT u.userId,u.nickName,u.realName,r.roleName,t.state,t.createdAt from project_task t,`user` u,role r  WHERE t.projectId=#{arg0} and t.userId=u.userId and r.roleId=u.roleId
+    </select>
+    <select id="recommendProjectsByCategoryId" resultType="com.example.demo.entity.CharityProject">
+    SELECT projectId, categoryId,projectName,projectImagePath,raisedFunds,usedFunds,participantNumber,
+    introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime
+    from charity_project where categoryId=#{arg0} ORDER BY raisedFunds-budget limit 5
+    </select>
+</mapper>

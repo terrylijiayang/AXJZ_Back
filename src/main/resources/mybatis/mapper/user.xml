@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.mapper.UserMapper">
+
+    <resultMap type="com.example.demo.entity.Menu" id="menuTree">
+        <id column="menuId" property="menuId"/>
+        <result column="menuName" property="menuName"/>
+        <result column="menuAddr" property="menuAddr"/>
+        <result column="menuSts" property="menuSts"/>
+        <result column="menuSort" property="menuSort"/>
+        <result column="menuImg" property="menuImg"/>
+        <collection property="children" ofType="com.example.demo.entity.Menu" column="menuId" select="getMenuChildren"/>
+    </resultMap>
+    <resultMap type="com.example.demo.entity.RoleMenu" id="menuRoleTree">
+        <id column="menuId" property="menuId"/>
+        <result column="roleId" property="roleId"/>
+        <result column="menuName" property="menuName"/>
+        <result column="menuAddr" property="menuAddr"/>
+        <result column="menuSts" property="menuSts"/>
+        <result column="menuSort" property="menuSort"/>
+        <result column="menuImg" property="menuImg"/>
+        <collection property="children" ofType="com.example.demo.entity.Menu" column="{menuId=menuId,roleId=roleId}" select="getRoleMenuChildren"/>
+    </resultMap>
+    <!-- 先查询菜单根级目录 -->
+    <!-- 这里的返回结果必须为resultMap，并且值为上面构建的resultMap的id的值 -->
+    <select id="getAllMenu" resultMap="menuTree">
+        SELECT m1.menuId,m1.menuName,m1.menuAddr,m1.menuSts,m1.menuSort,m1.menuImg
+        FROM
+        menu m1
+        WHERE m1.supMenuId=0 ORDER BY m1.menuSort
+    </select>
+    <!-- 再利用上次查询结果colliection中column的值cid做递归查询，查出所有子菜单 -->
+    <!-- 这里的返回结果必须为resultMap，并且值为上面构建的resultMap的id的值 -->
+    <select id="getMenuChildren" resultMap="menuTree">
+        SELECT m2.menuId,m2.menuName,m2.menuAddr,m2.menuSts,m2.menuSort,m2.menuImg
+        FROM menu m2
+        WHERE m2.supMenuId=#{menuId} ORDER BY m2.menuSort
+    </select>
+    <select id="getRoleAllMenu" resultMap="menuRoleTree">
+        SELECT m.menuId,m.menuName,m.menuAddr,m.menuSts,m.menuSort,m.menuImg,a.roleId FROM authority a LEFT JOIN role r on
+        r.roleId=a.roleId LEFT JOIN menu m on m.menuId=a.menuId WHERE a.roleId=#{arg0} AND m.supMenuId=0 ORDER BY m.menuSort
+    </select>
+    <select id="getRoleMenuChildren" resultMap="menuRoleTree">
+        SELECT m.menuId,m.menuName,m.menuAddr,m.menuSts,m.menuSort,m.menuImg,a.roleId FROM authority a LEFT JOIN role r on
+        r.roleId=a.roleId LEFT JOIN menu m on m.menuId=a.menuId WHERE a.roleId=#{roleId} AND m.supMenuId=#{menuId} ORDER BY m.menuSort
+    </select>
+    <select id="getUserByPhone" resultType="com.example.demo.entity.User">
+        select userId,phone, password,nickName,realName,identityNumber,avatarPath,roleName,role.roleId
+        from user,role
+        where phone = #{arg0} AND `user`.roleId=role.roleId
+    </select>
+    <select id="getUserByIdentityNumber" resultType="com.example.demo.entity.User">
+        select userId,phone, password,realName,identityNumber,avatarPath,roleName,role.roleId
+        from user,role
+        where identityNumber = #{arg0} AND `user`.roleId=role.roleId
+    </select>
+    <insert id="register" parameterType="com.example.demo.entity.User" useGeneratedKeys="true" keyProperty="userId">
+      INSERT INTO user (phone, password,nickName,realName,identityNumber,avatarPath,roleId)
+      VALUES (#{phone}, #{password},#{nickName},#{realName},#{identityNumber},#{avatarPath},1)
+    </insert>
+    <select id="myDonationsNum" resultType="java.lang.Integer">
+        select count(*)
+        from donation_record
+        WHERE donation_record.userId=#{arg0}
+    </select>
+    <select id="myDonations" parameterType="com.example.demo.dto.MyDonationDTO" resultType="com.example.demo.dto.ProjectsDTO">
+        select p.projectId,c.categoryId,u.userId,projectName,projectImagePath,raisedFunds,participantNumber,introduce,projectPlan,budget,budgetBreakdown,state,addTime,startingTime,endingTime,
+        categoryName,u.nickName,u.realName,d.donationNumber,d.donationAmount
+        from charity_project p,charity_category c,user u,donation_record d
+        WHERE c.categoryId = p.categoryId and u.userId=#{userId}
+        and d.userId = u.userId and d.projectId=p.projectId
+        limit #{page},#{pageSize}
+    </select>
+    <select id="getAllUser" parameterType="com.example.demo.dto.PageDTO" resultType="com.example.demo.entity.User">
+        SELECT userId,phone, password,nickName,realName,identityNumber,avatarPath,roleName,role.roleId
+        from user,role
+        where `user`.roleId=role.roleId
+        limit #{page},#{pageSize}
+    </select>
+    <select id="AllUsersNum" resultType="java.lang.Integer">
+        SELECT count(*)
+        from user
+    </select>
+    <delete id="delUserById" parameterType="java.util.List">
+        DELETE FROM user WHERE userId = #{arg0}
+    </delete>
+    <select id="getAllRole"   resultType="com.example.demo.entity.Role">
+        SELECT roleId,roleName,description
+        from role
+    </select>
+    <update id="updateMenu" parameterType="com.example.demo.entity.Menu">
+        update menu
+        set
+        menuName=#{menuName},
+        menuAddr=#{menuAddr},
+        menuImg=#{menuImg},
+        menuSts = #{menuSts},
+        menuSort = #{menuSort}
+        where  menuId =#{menuId}
+    </update>
+    <select id="listByRoleId" resultType="java.lang.Integer">
+       SELECT m.menuId FROM authority a LEFT JOIN role r on
+        r.roleId=a.roleId LEFT JOIN menu m on m.menuId=a.menuId WHERE a.roleId=#{arg0}
+    </select>
+    <delete id="delAuthorityByRoleId" parameterType="java.util.List">
+        DELETE FROM authority WHERE roleId = #{arg0}
+    </delete>
+    <insert id="insertAuthorityByRole" parameterType="com.example.demo.entity.Authority">
+        INSERT INTO authority (roleId, menuId)
+        VALUES
+        <foreach collection="selectList" item="item" index= "index" separator =",">
+            (
+            #{roleId},
+            #{item}
+            )
+        </foreach>
+    </insert>
+    <update id="updateUser" parameterType="com.example.demo.dto.UserDTO">
+        update user
+        set
+        phone=#{phone},
+        nickName=#{nickName},
+        realName=#{realName},
+        identityNumber=#{identityNumber},
+        roleId=#{roleId}
+        where  userId =#{userId}
+    </update>
+    <select id="getAdminUsers" resultType="com.example.demo.entity.User">
+        SELECT userId,phone, password,nickName,realName,identityNumber,avatarPath,roleName,role.roleId
+        from user u ,role WHERE  u.roleId=role.roleId AND  role.roleId in (1,2)
+    </select>
+
+</mapper>
